@@ -40,7 +40,7 @@
     },
     "info":
     {
-      "enabled"       : true,
+      "enabled"       : false,
       "frequency"     : 1
     },
     "logs":
@@ -82,7 +82,7 @@
     },
     "audio":
     {
-      "enabled"       : true
+      "enabled"       : false
     },
     "bumper":
     {
