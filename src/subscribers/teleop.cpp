@@ -30,6 +30,7 @@ TeleopSubscriber::TeleopSubscriber( const std::string& name, const std::string& 
   cmd_vel_topic_(cmd_vel_topic),
   joint_angles_topic_(joint_angles_topic),
   BaseSubscriber( name, cmd_vel_topic, session ),
+  joint_angle_trajectory_topic_(joint_angles_topic+std::string("_trajectory")), //Anis
   p_motion_( session->service("ALMotion") )
 {}
 
@@ -37,6 +38,7 @@ void TeleopSubscriber::reset( ros::NodeHandle& nh )
 {
   sub_cmd_vel_ = nh.subscribe( cmd_vel_topic_, 10, &TeleopSubscriber::cmd_vel_callback, this );
   sub_joint_angles_ = nh.subscribe( joint_angles_topic_, 10, &TeleopSubscriber::joint_angles_callback, this );
+  sub_joint_angle_trajectory_ = nh.subscribe(  joint_angle_trajectory_topic_, 10, &TeleopSubscriber::joint_angle_trajectory_callback, this ); //Anis
 
   is_initialized_ = true;
 }
@@ -63,6 +65,25 @@ void TeleopSubscriber::joint_angles_callback( const naoqi_bridge_msgs::JointAngl
     p_motion_.async<void>("changeAngles", js_msg->joint_names, js_msg->joint_angles, js_msg->speed);
   }
 }
+
+void TeleopSubscriber::joint_angle_trajectory_callback( const naoqi_bridge_msgs::JointAngleTrajectoryConstPtr& jt_msg ) //Anis
+{
+  std::vector< std::vector<float> > angles(jt_msg->joint_names.size());
+
+  int n_angles = jt_msg->joint_angles.size() / jt_msg->joint_names.size();
+  for(int i = 0; i < jt_msg->joint_names.size(); i++)
+    angles[i] = std::vector<float>(&jt_msg->joint_angles[n_angles*i], &jt_msg->joint_angles[n_angles*(i+1)] );
+
+
+  std::vector< std::vector<float> > times(jt_msg->joint_names.size());
+
+  int n_times = jt_msg->times.size() / jt_msg->joint_names.size();
+  for(int i = 0; i < jt_msg->joint_names.size(); i++)
+    times[i] = std::vector<float>(&jt_msg->times[n_times*i], &jt_msg->times[n_times*(i+1)] );
+
+  p_motion_.async<void>("angleInterpolation", jt_msg->joint_names, angles, times, jt_msg->relative != 1);
+}
+
 
 } //publisher
 } // naoqi

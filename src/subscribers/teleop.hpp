@@ -30,6 +30,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <naoqi_bridge_msgs/JointAnglesWithSpeed.h>
+#include <naoqi_bridge_msgs/JointAngleTrajectory.h>  //Anis
 
 namespace naoqi
 {
@@ -45,15 +46,18 @@ public:
   void reset( ros::NodeHandle& nh );
   void cmd_vel_callback( const geometry_msgs::TwistConstPtr& twist_msg );
   void joint_angles_callback( const naoqi_bridge_msgs::JointAnglesWithSpeedConstPtr& js_msg );
+  void joint_angle_trajectory_callback( const naoqi_bridge_msgs::JointAngleTrajectoryConstPtr& jt_msg ); //Anis
 
 private:
 
   std::string cmd_vel_topic_;
   std::string joint_angles_topic_;
+  std::string joint_angle_trajectory_topic_; //Anis
 
   qi::AnyObject p_motion_;
   ros::Subscriber sub_cmd_vel_;
   ros::Subscriber sub_joint_angles_;
+  ros::Subscriber sub_joint_angle_trajectory_; //Anis
 
 
 
