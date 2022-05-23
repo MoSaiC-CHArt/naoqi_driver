@@ -65,3 +65,8 @@ Travis - Continuous Integration
 +-----------------+---------------------+
 | Indigo          |     |indigo|        |
 +-----------------+---------------------+
+
+This fork
+=========
+This fork allows the use of JointAngleTrajectory to control the Nao robot.
+It disables info and audio from boot_config.json
